@@ -1,3 +1,15 @@
+
+# **A Responsive Chat Application With different Channels**
+
+
+
+
+
+
+
+
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
