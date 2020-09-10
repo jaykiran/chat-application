@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import {Grid, Form, Segment, Button, Header, Message, Icon} from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import firebase from '../../firebase';
+
+
 export default class Register extends Component {
 
     state = {
@@ -12,11 +14,51 @@ export default class Register extends Component {
         passwordConfirmation: '',
     };
 
+    isFormValid = () => {
+
+        let errors = [];
+        let error;
+
+        if(this.isFormEmpty(this.state)) {
+
+            error = { message: "Fill in all fields" };
+            this.setState({ errors: errors.concat(error)});
+            return false;
+
+        } else if(!this.isPasswordValid(this.state)) {
+            
+            error = { message: "password is not valid" };
+            this.setState({ errors: errors.concat(error)});
+            return false;
+
+        } else {
+            return true;
+        }
+    }
+
+    isFormEmpty = ({ username, email, password, passwordConfirmation}) => {
+        return !username.length || !email.length || !password.length || !passwordConfirmation.length;
+    }
+
+    isPasswordValid = ({password, passwordConfirmation}) => {
+        if(password.length < 6 || passwordConfirmation.length < 6) {
+            return false;
+        } else if(password !== passwordConfirmation) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    displayErrors = errors => errors.map((error, i) => <p key={i}>{error.message}</p>);
+
     handleChange = event => {
         this.setState({[event.target.name]: event.target.value});
     };
 
     handleSubmit = event =>{
+        if(this.isFormValid()) {
         event.preventDefault();
         firebase
             .auth()
@@ -27,6 +69,7 @@ export default class Register extends Component {
             .catch(err =>{
                 console.error(err);
             });
+        }
     }
 
     render() {
@@ -55,6 +98,12 @@ export default class Register extends Component {
                             <Button color="orange" fluid size="large">Submit</Button>
                         </Segment>
                     </Form>
+                    {this.state.errors.length > 0 && (
+                        <Message error>
+                            <h3>Error</h3>
+                            {this.displayErrors(this.state.errors)}
+                        </Message>
+                    )}
                     <Message>Already a User? <Link to="/login">Login</Link></Message>
                 </Grid.Column>
             </Grid>
