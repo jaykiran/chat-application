@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import firebase from '../../firebase';
-import { Grid, Header, Icon, Dropdown } from 'semantic-ui-react';
+import {connect} from 'react-redux';
+import { Grid, Header, Icon, Dropdown, Image } from 'semantic-ui-react';
 
 class UserPanel extends Component {
+
+    state = {
+        user: this.props.currentUser
+    }
 
     dropDownOptions = () => [
         {
             key: 'user',
-            text: <span>Signed in as <strong>User</strong></span>,
+            text: <span>Signed in as <strong>{this.state.user.displayName}</strong></span>,
             disabled: true
         },
         {
@@ -28,6 +33,8 @@ class UserPanel extends Component {
     }
 
     render() {
+        // console.log(this.state.user);
+        const { user } = this.state;
         return (
             <Grid style={{background: '#4c3c4c'}}>
                 <Grid.Column>
@@ -36,17 +43,24 @@ class UserPanel extends Component {
                             <Icon name="code" />
                             <Header.Content>DevChat</Header.Content>
                         </Header>
+                        {/* user dropdown */}
+                        <Header style={{padding: '0.25em', }} as="h4" inverted>
+                            <Dropdown trigger={
+                                <span>
+                                    <Image src={user.photoURL} spaced="right" avatar />
+                                    {user.displayName}
+                                </span>
+                            } options={this.dropDownOptions()} />
+                        </Header>
                     </Grid.Row>
-                    {/* user dropdown */}
-                    <Header style={{padding: '0.25em', }} as="h4" inverted>
-                        <Dropdown trigger={
-                            <span>User</span>
-                        } options={this.dropDownOptions()} />
-                    </Header>
                 </Grid.Column>
             </Grid>
         )
     }
 }
 
-export default UserPanel;
+const mapStateToProps = state => ({
+    currentUser: state.user.currentUser
+})
+
+export default connect(mapStateToProps)(UserPanel);
